@@ -40,13 +40,13 @@ export default function MainScreen({ navigation }) {
   }
 
   function handleSwap() {
-    const oldBase = baseCurrency;
+    const prevBase = baseCurrency;
     setBaseCurrency(targetCurrency);
-    setTargetCurrency(oldBase);
+    setTargetCurrency(prevBase);
 
-    setResult(null);
-    setRate(null);
     setError('');
+    setRate(null);
+    setResult(null);
   }
 
   async function handleConvert() {
@@ -117,6 +117,10 @@ export default function MainScreen({ navigation }) {
         />
       </View>
 
+      <View style={styles.swapButton}>
+        <Button title="Swap Currencies" onPress={handleSwap} />
+      </View>
+
       <View style={styles.field}>
         <Text style={styles.label}>Amount</Text>
         <TextInput
@@ -129,15 +133,13 @@ export default function MainScreen({ navigation }) {
 
       {error ? <Text style={styles.error}>{error}</Text> : null}
 
-      <View style={styles.swapButton}>
-        <Button title="Swap Currencies" onPress={handleSwap} />
+      <View style={{ marginBottom: 12 }}>
+        {loading ? (
+          <ActivityIndicator size="large" />
+        ) : (
+          <Button title="Convert" onPress={handleConvert} disabled={loading} />
+        )}
       </View>
-
-      {loading ? (
-        <ActivityIndicator size="large" />
-      ) : (
-        <Button title="Convert" onPress={handleConvert} disabled={loading} />
-      )}
 
       {result != null && rate != null && (
         <View style={styles.resultBox}>
@@ -164,52 +166,63 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 24,
-    paddingTop: 40,
-    backgroundColor: '#f7f7f7',
+    paddingTop: 50,
+    backgroundColor: '#F2F2F7',
   },
   title: {
-    fontSize: 22,
-    fontWeight: '600',
-    marginBottom: 24,
+    fontSize: 26,
+    fontWeight: '700',
+    marginBottom: 28,
     textAlign: 'center',
+    color: '#333',
   },
   field: {
-    marginBottom: 16,
+    marginBottom: 20,
   },
   label: {
-    fontSize: 14,
-    marginBottom: 4,
+    fontSize: 15,
+    fontWeight: '500',
+    marginBottom: 6,
+    color: '#444',
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 6,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    backgroundColor: '#fff',
+    borderColor: '#C7C7CC',
+    borderRadius: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    backgroundColor: '#FFFFFF',
+    fontSize: 16,
   },
   error: {
-    color: 'red',
-    marginBottom: 12,
+    color: '#D9534F',
+    marginBottom: 14,
+    fontSize: 14,
+    fontWeight: '500',
   },
   swapButton: {
-    marginBottom: 12,
+    marginBottom: 14,
+    marginTop: 6,
   },
   resultBox: {
-    marginTop: 24,
-    padding: 12,
-    borderRadius: 6,
-    backgroundColor: '#e8f5e9',
+    marginTop: 32,
+    padding: 16,
+    borderRadius: 12,
+    backgroundColor: '#E5F8E8',
+    borderWidth: 1,
+    borderColor: '#B6E2BE',
   },
   resultText: {
-    fontSize: 16,
-    fontWeight: '500',
-    marginBottom: 4,
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 6,
+    color: '#222',
   },
   rateText: {
-    fontSize: 14,
+    fontSize: 15,
+    color: '#333',
   },
   aboutButton: {
-    marginTop: 32,
+    marginTop: 40,
   },
 });
