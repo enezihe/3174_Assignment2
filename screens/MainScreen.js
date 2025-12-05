@@ -1,3 +1,4 @@
+// screens/MainScreen.js
 import React, { useState } from 'react';
 import {
   View,
@@ -8,6 +9,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
+import FormField from '../components/FormField';
 
 export default function MainScreen({ navigation }) {
   const [baseCurrency, setBaseCurrency] = useState('CAD');
@@ -71,22 +73,45 @@ export default function MainScreen({ navigation }) {
       const response = await fetch(url);
 
       if (!response.ok) {
-        throw new Error('Network error. Please try again.');
+        if (response.status === 401 || response.status === 403) {
+          throw new Error('Invalid or unauthorized API key. Please check your API configuration.');
+        }
+
+        if (response.status === 429) {
+          throw new Error('API rate limit exceeded. Please wait and try again.');
+        }
+
+        throw new Error(`Request failed with status ${response.status}. Please try again.`);
       }
 
       const json = await response.json();
 
-      if (!json || !json.data || json.data[targetCurrency] == null) {
-        throw new Error('Could not find the requested currency.';
+      if (!json || !json.data) {
+        throw new Error('Unexpected API response format. Please try again later.');
+      }
+
+      if (json.data[targetCurrency] == null) {
+        throw new Error(`Could not find exchange rate for ${targetCurrency}.`);
       }
 
       const exchangeRate = Number(json.data[targetCurrency]);
+
+      if (Number.isNaN(exchangeRate)) {
+        throw new Error('Received invalid exchange rate from server.');
+      }
+
       const converted = numericAmount * exchangeRate;
 
       setRate(exchangeRate);
       setResult(converted);
     } catch (err) {
-      setError(err.message || 'Unexpected error occurred.');
+      const message = err?.message || '';
+
+      if (message.toLowerCase().includes('network request failed')) {
+        setError('Network failure. Please check your internet connection and try again.');
+      } else {
+        setError(message || 'Unexpected error occurred. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -96,8 +121,7 @@ export default function MainScreen({ navigation }) {
     <View style={styles.container}>
       <Text style={styles.title}>Currency Converter</Text>
 
-      <View style={styles.field}>
-        <Text style={styles.label}>Base Currency</Text>
+      <FormField label="Base Currency">
         <View style={styles.pickerWrapper}>
           <Picker
             selectedValue={baseCurrency}
@@ -110,10 +134,9 @@ export default function MainScreen({ navigation }) {
             <Picker.Item label="GBP - British Pound" value="GBP" />
           </Picker>
         </View>
-      </View>
+      </FormField>
 
-      <View style={styles.field}>
-        <Text style={styles.label}>Destination Currency</Text>
+      <FormField label="Destination Currency">
         <View style={styles.pickerWrapper}>
           <Picker
             selectedValue={targetCurrency}
@@ -126,21 +149,16 @@ export default function MainScreen({ navigation }) {
             <Picker.Item label="GBP - British Pound" value="GBP" />
           </Picker>
         </View>
-      </View>
+      </FormField>
 
-      <TouchableOpacity style={styles.primaryButton} onPress={handleSwap}>
-        <Text style={styles.primaryButtonText}>Swap Currencies</Text>
-      </TouchableOpacity>
-
-      <View style={styles.field}>
-        <Text style={styles.label}>Amount</Text>
+      <FormField label="Amount">
         <TextInput
           style={styles.input}
           value={amount}
           onChangeText={setAmount}
           keyboardType="numeric"
         />
-      </View>
+      </FormField>
 
       {error ? <Text style={styles.error}>{error}</Text> : null}
 
@@ -216,10 +234,9 @@ const styles = StyleSheet.create({
     borderColor: '#C7C7CC',
     borderRadius: 10,
     backgroundColor: '#FFFFFF',
-    // overflow removed to avoid clipping text
   },
   picker: {
-    height: 50, // a bit taller so text is not cut
+    height: 50,
   },
   error: {
     color: '#D9534F',
