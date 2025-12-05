@@ -3,11 +3,30 @@ import {
   View,
   Text,
   TextInput,
-  Button,
   StyleSheet,
   ActivityIndicator,
+  TouchableOpacity,
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
+
+function AppButton({ title, onPress, variant = 'primary', disabled = false }) {
+  const containerStyles = [
+    styles.buttonBase,
+    variant === 'primary' ? styles.buttonPrimary : styles.buttonSecondary,
+    disabled && styles.buttonDisabled,
+  ];
+
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      style={containerStyles}
+      activeOpacity={0.8}
+      disabled={disabled}
+    >
+      <Text style={styles.buttonText}>{title}</Text>
+    </TouchableOpacity>
+  );
+}
 
 export default function MainScreen({ navigation }) {
   const [baseCurrency, setBaseCurrency] = useState('CAD');
@@ -131,7 +150,7 @@ export default function MainScreen({ navigation }) {
       </View>
 
       <View style={styles.swapButton}>
-        <Button title="Swap Currencies" onPress={handleSwap} />
+        <AppButton title="Swap Currencies" onPress={handleSwap} />
       </View>
 
       {/* Amount input */}
@@ -147,12 +166,17 @@ export default function MainScreen({ navigation }) {
 
       {error ? <Text style={styles.error}>{error}</Text> : null}
 
-      <View style={{ marginBottom: 12 }}>
-        {loading ? (
-          <ActivityIndicator size="large" />
-        ) : (
-          <Button title="Convert" onPress={handleConvert} disabled={loading} />
+      <View style={styles.convertSection}>
+        {loading && (
+          <View style={{ marginBottom: 8 }}>
+            <ActivityIndicator size="large" />
+          </View>
         )}
+        <AppButton
+          title="Convert"
+          onPress={handleConvert}
+          disabled={loading}
+        />
       </View>
 
       {result != null && rate != null && (
@@ -167,9 +191,10 @@ export default function MainScreen({ navigation }) {
       )}
 
       <View style={styles.aboutButton}>
-        <Button
+        <AppButton
           title="Go to About"
           onPress={() => navigation.navigate('About')}
+          variant="secondary"
         />
       </View>
     </View>
@@ -214,9 +239,11 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: '#FFFFFF',
     overflow: 'hidden',
+    width: '100%',
   },
   picker: {
     height: 44,
+    width: '100%',
   },
   error: {
     color: '#D9534F',
@@ -227,6 +254,9 @@ const styles = StyleSheet.create({
   swapButton: {
     marginBottom: 14,
     marginTop: 6,
+  },
+  convertSection: {
+    marginBottom: 12,
   },
   resultBox: {
     marginTop: 32,
@@ -248,5 +278,25 @@ const styles = StyleSheet.create({
   },
   aboutButton: {
     marginTop: 40,
+  },
+  // Custom button styles (no blue)
+  buttonBase: {
+    paddingVertical: 12,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  buttonPrimary: {
+    backgroundColor: '#10B981', // yeşil
+  },
+  buttonSecondary: {
+    backgroundColor: '#4B5563', // koyu gri
+  },
+  buttonDisabled: {
+    opacity: 0.6,
+  },
+  buttonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });
