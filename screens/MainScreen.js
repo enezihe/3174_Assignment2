@@ -17,7 +17,7 @@ export default function MainScreen({ navigation }) {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const API_KEY = 'fca_live_e6wCn6y45iDCSl6N7FZnzMPjLXiQ8cNdQ0vUkJca'; // put your FreeCurrencyAPI key here
+  const API_KEY = 'fca_live_e6wCn6y45iDCSl6N7FZnzMPjLXiQ8cNdQ0vUkJca';
 
   function validateInputs() {
     const currencyRegex = /^[A-Z]{3}$/;
@@ -37,6 +37,16 @@ export default function MainScreen({ navigation }) {
     }
 
     return '';
+  }
+
+  function handleSwap() {
+    const oldBase = baseCurrency;
+    setBaseCurrency(targetCurrency);
+    setTargetCurrency(oldBase);
+
+    setResult(null);
+    setRate(null);
+    setError('');
   }
 
   async function handleConvert() {
@@ -70,7 +80,6 @@ export default function MainScreen({ navigation }) {
       }
 
       const exchangeRate = Number(json.data[targetCurrency]);
-
       const converted = numericAmount * exchangeRate;
 
       setRate(exchangeRate);
@@ -119,6 +128,10 @@ export default function MainScreen({ navigation }) {
       </View>
 
       {error ? <Text style={styles.error}>{error}</Text> : null}
+
+      <View style={styles.swapButton}>
+        <Button title="Swap Currencies" onPress={handleSwap} />
+      </View>
 
       {loading ? (
         <ActivityIndicator size="large" />
@@ -177,6 +190,9 @@ const styles = StyleSheet.create({
   },
   error: {
     color: 'red',
+    marginBottom: 12,
+  },
+  swapButton: {
     marginBottom: 12,
   },
   resultBox: {
