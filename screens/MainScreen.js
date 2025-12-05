@@ -7,6 +7,7 @@ import {
   StyleSheet,
   ActivityIndicator,
 } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 
 export default function MainScreen({ navigation }) {
   const [baseCurrency, setBaseCurrency] = useState('CAD');
@@ -95,32 +96,45 @@ export default function MainScreen({ navigation }) {
     <View style={styles.container}>
       <Text style={styles.title}>Currency Converter</Text>
 
+      {/* Base Currency Picker */}
       <View style={styles.field}>
         <Text style={styles.label}>Base Currency</Text>
-        <TextInput
-          style={styles.input}
-          value={baseCurrency}
-          onChangeText={setBaseCurrency}
-          autoCapitalize="characters"
-          maxLength={3}
-        />
+        <View style={styles.pickerWrapper}>
+          <Picker
+            selectedValue={baseCurrency}
+            onValueChange={(value) => setBaseCurrency(value)}
+            style={styles.picker}
+          >
+            <Picker.Item label="CAD - Canadian Dollar" value="CAD" />
+            <Picker.Item label="USD - US Dollar" value="USD" />
+            <Picker.Item label="AUD - Australian Dollar" value="AUD" />
+            <Picker.Item label="GBP - British Pound" value="GBP" />
+          </Picker>
+        </View>
       </View>
 
+      {/* Destination Currency Picker */}
       <View style={styles.field}>
         <Text style={styles.label}>Destination Currency</Text>
-        <TextInput
-          style={styles.input}
-          value={targetCurrency}
-          onChangeText={setTargetCurrency}
-          autoCapitalize="characters"
-          maxLength={3}
-        />
+        <View style={styles.pickerWrapper}>
+          <Picker
+            selectedValue={targetCurrency}
+            onValueChange={(value) => setTargetCurrency(value)}
+            style={styles.picker}
+          >
+            <Picker.Item label="CAD - Canadian Dollar" value="CAD" />
+            <Picker.Item label="USD - US Dollar" value="USD" />
+            <Picker.Item label="AUD - Australian Dollar" value="AUD" />
+            <Picker.Item label="GBP - British Pound" value="GBP" />
+          </Picker>
+        </View>
       </View>
 
       <View style={styles.swapButton}>
         <Button title="Swap Currencies" onPress={handleSwap} />
       </View>
 
+      {/* Amount input */}
       <View style={styles.field}>
         <Text style={styles.label}>Amount</Text>
         <TextInput
@@ -193,6 +207,16 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     backgroundColor: '#FFFFFF',
     fontSize: 16,
+  },
+  pickerWrapper: {
+    borderWidth: 1,
+    borderColor: '#C7C7CC',
+    borderRadius: 10,
+    backgroundColor: '#FFFFFF',
+    overflow: 'hidden',
+  },
+  picker: {
+    height: 44,
   },
   error: {
     color: '#D9534F',
