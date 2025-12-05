@@ -9,25 +9,6 @@ import {
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 
-function AppButton({ title, onPress, variant = 'primary', disabled = false }) {
-  const containerStyles = [
-    styles.buttonBase,
-    variant === 'primary' ? styles.buttonPrimary : styles.buttonSecondary,
-    disabled && styles.buttonDisabled,
-  ];
-
-  return (
-    <TouchableOpacity
-      onPress={onPress}
-      style={containerStyles}
-      activeOpacity={0.8}
-      disabled={disabled}
-    >
-      <Text style={styles.buttonText}>{title}</Text>
-    </TouchableOpacity>
-  );
-}
-
 export default function MainScreen({ navigation }) {
   const [baseCurrency, setBaseCurrency] = useState('CAD');
   const [targetCurrency, setTargetCurrency] = useState('USD');
@@ -96,7 +77,7 @@ export default function MainScreen({ navigation }) {
       const json = await response.json();
 
       if (!json || !json.data || json.data[targetCurrency] == null) {
-        throw new Error('Could not find the requested currency.');
+        throw new Error('Could not find the requested currency.';
       }
 
       const exchangeRate = Number(json.data[targetCurrency]);
@@ -115,13 +96,12 @@ export default function MainScreen({ navigation }) {
     <View style={styles.container}>
       <Text style={styles.title}>Currency Converter</Text>
 
-      {/* Base Currency Picker */}
       <View style={styles.field}>
         <Text style={styles.label}>Base Currency</Text>
         <View style={styles.pickerWrapper}>
           <Picker
             selectedValue={baseCurrency}
-            onValueChange={(value) => setBaseCurrency(value)}
+            onValueChange={value => setBaseCurrency(value)}
             style={styles.picker}
           >
             <Picker.Item label="CAD - Canadian Dollar" value="CAD" />
@@ -132,13 +112,12 @@ export default function MainScreen({ navigation }) {
         </View>
       </View>
 
-      {/* Destination Currency Picker */}
       <View style={styles.field}>
         <Text style={styles.label}>Destination Currency</Text>
         <View style={styles.pickerWrapper}>
           <Picker
             selectedValue={targetCurrency}
-            onValueChange={(value) => setTargetCurrency(value)}
+            onValueChange={value => setTargetCurrency(value)}
             style={styles.picker}
           >
             <Picker.Item label="CAD - Canadian Dollar" value="CAD" />
@@ -149,11 +128,10 @@ export default function MainScreen({ navigation }) {
         </View>
       </View>
 
-      <View style={styles.swapButton}>
-        <AppButton title="Swap Currencies" onPress={handleSwap} />
-      </View>
+      <TouchableOpacity style={styles.primaryButton} onPress={handleSwap}>
+        <Text style={styles.primaryButtonText}>Swap Currencies</Text>
+      </TouchableOpacity>
 
-      {/* Amount input */}
       <View style={styles.field}>
         <Text style={styles.label}>Amount</Text>
         <TextInput
@@ -166,17 +144,18 @@ export default function MainScreen({ navigation }) {
 
       {error ? <Text style={styles.error}>{error}</Text> : null}
 
-      <View style={styles.convertSection}>
-        {loading && (
-          <View style={{ marginBottom: 8 }}>
-            <ActivityIndicator size="large" />
-          </View>
+      <View style={{ marginBottom: 12 }}>
+        {loading ? (
+          <ActivityIndicator size="large" />
+        ) : (
+          <TouchableOpacity
+            style={styles.primaryButton}
+            onPress={handleConvert}
+            disabled={loading}
+          >
+            <Text style={styles.primaryButtonText}>Convert</Text>
+          </TouchableOpacity>
         )}
-        <AppButton
-          title="Convert"
-          onPress={handleConvert}
-          disabled={loading}
-        />
       </View>
 
       {result != null && rate != null && (
@@ -190,13 +169,12 @@ export default function MainScreen({ navigation }) {
         </View>
       )}
 
-      <View style={styles.aboutButton}>
-        <AppButton
-          title="Go to About"
-          onPress={() => navigation.navigate('About')}
-          variant="secondary"
-        />
-      </View>
+      <TouchableOpacity
+        style={styles.secondaryButton}
+        onPress={() => navigation.navigate('About')}
+      >
+        <Text style={styles.secondaryButtonText}>Go to About</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -238,12 +216,10 @@ const styles = StyleSheet.create({
     borderColor: '#C7C7CC',
     borderRadius: 10,
     backgroundColor: '#FFFFFF',
-    overflow: 'hidden',
-    width: '100%',
+    // overflow removed to avoid clipping text
   },
   picker: {
-    height: 44,
-    width: '100%',
+    height: 50, // a bit taller so text is not cut
   },
   error: {
     color: '#D9534F',
@@ -251,12 +227,30 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '500',
   },
-  swapButton: {
+  primaryButton: {
+    backgroundColor: '#34A853',
+    paddingVertical: 14,
+    borderRadius: 10,
+    alignItems: 'center',
     marginBottom: 14,
     marginTop: 6,
   },
-  convertSection: {
-    marginBottom: 12,
+  primaryButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  secondaryButton: {
+    backgroundColor: '#3C4043',
+    paddingVertical: 14,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginTop: 40,
+  },
+  secondaryButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
   },
   resultBox: {
     marginTop: 32,
@@ -275,28 +269,5 @@ const styles = StyleSheet.create({
   rateText: {
     fontSize: 15,
     color: '#333',
-  },
-  aboutButton: {
-    marginTop: 40,
-  },
-  // Custom button styles (no blue)
-  buttonBase: {
-    paddingVertical: 12,
-    borderRadius: 10,
-    alignItems: 'center',
-  },
-  buttonPrimary: {
-    backgroundColor: '#10B981', // yeşil
-  },
-  buttonSecondary: {
-    backgroundColor: '#4B5563', // koyu gri
-  },
-  buttonDisabled: {
-    opacity: 0.6,
-  },
-  buttonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '600',
   },
 });
