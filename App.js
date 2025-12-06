@@ -13,7 +13,9 @@ export default function App() {
         <Stack.Screen
           name="Main"
           component={MainScreen}
-          options={{ title: 'Currency Converter' }}
+          options={{
+            headerShown: false
+          }}
         />
         <Stack.Screen
           name="About"
