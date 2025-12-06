@@ -151,6 +151,11 @@ export default function MainScreen({ navigation }) {
         </View>
       </FormField>
 
+      {/* SWAP BUTTON HERE */}
+      <TouchableOpacity style={styles.primaryButton} onPress={handleSwap}>
+        <Text style={styles.primaryButtonText}>Swap Currencies</Text>
+      </TouchableOpacity>
+
       <FormField label="Amount">
         <TextInput
           style={styles.input}
@@ -210,15 +215,6 @@ const styles = StyleSheet.create({
     marginBottom: 28,
     textAlign: 'center',
     color: '#333',
-  },
-  field: {
-    marginBottom: 20,
-  },
-  label: {
-    fontSize: 15,
-    fontWeight: '500',
-    marginBottom: 6,
-    color: '#444',
   },
   input: {
     borderWidth: 1,
